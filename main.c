@@ -75,6 +75,7 @@ void main(void) {
 	uint8_t data_or_addr;	// Used in firmware file parsing
 	uint8_t eof;			// End of file flag
 	uint16_t reset_vector;
+	uint16_t first_word;	// First 2 bytes of main program
 
 	data_sd = data_sd_buff;	// Set pointer to data buffer address
 
@@ -91,10 +92,14 @@ void main(void) {
 *	Look for firmware file on SD card
 *******************************************************************************/
 	if ((fdataoffset = firm_file_offset(data_sd, &fatinfo)) == -1) {
-		asm("BR prog_start");	// Go to main program
+		first_word = *((uint16_t *)prog_start);
+		if (first_word == 0xFFFF) {		// Main program not in flash
+			brownout_reset();			// Trigger brownout reset
+		} else {
+			asm("BR prog_start");		// Go to main program
+		}
 	}
 
-///TODO change to double flash (off.....flash-flash.....flash-flash...)
 /*******************************************************************************
 *	Turn on LED to ask "Do you want to perform a firmware update?"
 *******************************************************************************/
@@ -153,8 +158,13 @@ void main(void) {
 /*******************************************************************************
 *	DECLINE
 *******************************************************************************/
-	if (user_input == CTRL_TAP) {	// User declined
-		asm("BR prog_start");		// Go to main program
+	if (user_input == CTRL_TAP) {		// User declined
+		first_word = *((uint16_t *)prog_start);
+		if (first_word == 0xFFFF) {		// Main program not in flash
+			brownout_reset();			// Trigger brownout reset
+		} else {
+			asm("BR prog_start");		// Go to main program
+		}
 	}
 
 /*******************************************************************************
@@ -187,7 +197,7 @@ void main(void) {
 				eof = 1;
 				LED1_PANIC();	// Flash LED to show "panic"
 // Trigger brownout reset upon failure
-				PMMCTL0 = PMMPW | PMMSWBOR;
+				brownout_reset();
 
 			case 'q':		// 'q' marks the termination of the file
 				eof = 1;
@@ -259,7 +269,12 @@ void main(void) {
 
 	LED1_OFF();
 
-	asm("BR prog_start");	// Go to main program
+	first_word = *((uint16_t *)prog_start);
+	if (first_word == 0xFFFF) {		// Main program not in flash
+		brownout_reset();			// Trigger brownout reset
+	} else {
+		asm("BR prog_start");		// Go to main program
+	}
 }
 
 /*----------------------------------------------------------------------------*/

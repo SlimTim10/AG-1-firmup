@@ -100,4 +100,11 @@ void enable_interrupts(void) {
 	__enable_interrupt();
 }
 
+/*----------------------------------------------------------------------------*/
+/* Trigger brownout reset													  */
+/*----------------------------------------------------------------------------*/
+void brownout_reset(void) {
+	PMMCTL0 = PMMPW | PMMSWBOR;
+}
+
 #endif
