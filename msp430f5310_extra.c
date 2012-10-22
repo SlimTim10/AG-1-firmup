@@ -77,23 +77,6 @@ void clock_config(void) {
 }
 
 /*----------------------------------------------------------------------------*/
-/* Restart Real-Time Clock A in calendar mode								  */
-/*----------------------------------------------------------------------------*/
-void rtc_restart(void) {
-/* Switching between counter mode and calendar mode resets the clock/counter
-registers */
-	RTCCTL01 &= ~RTCMODE;
-	RTCCTL01 = RTCMODE;			// Calendar mode
-}
-
-/*----------------------------------------------------------------------------*/
-/* Return true iff RTC time values are safe for reading (not in transition)	  */
-/*----------------------------------------------------------------------------*/
-uint8_t rtc_rdy(void) {
-	return (RTCCTL01 & RTCRDY) > 0;
-}
-
-/*----------------------------------------------------------------------------*/
 /* Enable interrupts														  */
 /*----------------------------------------------------------------------------*/
 void enable_interrupts(void) {

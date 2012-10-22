@@ -5,10 +5,10 @@ Control Register=0
 NextState0=0
 NextState1=0
 [Action Register]
-Break=2
+Break=0
 State Storage=0
 [DebugChecksum]
-Checksum=971715925
+Checksum=-1152855261
 [DisAssemblyWindow]
 NumStates=_ 1
 State 1=_ 1

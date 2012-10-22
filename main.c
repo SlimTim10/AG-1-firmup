@@ -59,7 +59,6 @@ void main(void) {
 
 	uint8_t *data_sd;		// Pointer to SD card data buffer
 
-	uint8_t sec;			// Used for timing with RTC
 	uint16_t debounce;		// Used for debouncing
 
 	uint32_t fdataoffset;	// Offset of firmware file data
@@ -107,7 +106,7 @@ void main(void) {
 /*******************************************************************************
 *	Turn on LED to ask "Do you want to perform a firmware update?"
 *******************************************************************************/
-	TA0CCR0 = 0x7FFF;			// Count up to 0x7FFF 
+	TA0CCR0 = ACLK_1SEC;			// Count up to 1 second
 // ACLK source (32768 Hz), f/1, count up to CCR0, Timer_A clear
 	TA0CTL = TASSEL_1 | ID_0 | MC_1 | TACLR;
 
@@ -141,17 +140,14 @@ void main(void) {
 	debounce = 0x1000;
 	while (debounce--);		// Wait for debouncing
 
-// Wait until button is released or hold time (2 sec) is met
-	rtc_restart();		// Restart RTC
-	sec = RTCSEC;
-	while (ctrl_high() && sec < 2) {
-// Get new RTCSEC value when RTC is ready
-		if (rtc_rdy()) {
-			sec = RTCSEC;
-		}
-	}
+// ACLK source (32768 Hz), f/1, count continuous up, Timer_A clear
+	TA0CTL = TASSEL_1 | ID_0 | MC_2 | TACLR;
 
-	if (sec >= 2) {		// Wake up on button hold
+// Wait until button is released or hold time (2 sec) is met
+	while (ctrl_high() && TA0R < ACLK_2SEC);
+	TA0CTL = MC_0;
+
+	if (TA0R == ACLK_2SEC) {
 		user_input = CTRL_HOLD;
 	} else {
 		user_input = CTRL_TAP;
@@ -403,7 +399,7 @@ void error_state(void) {
 	while (!ctrl_high()) {
 		LED1_PANIC();
 		TA0R = 0;
-		while (!ctrl_high() && TA0R < 0xFFFF);
+		while (!ctrl_high() && TA0R < ACLK_2SEC);
 	}
 
 	TA0CTL = MC_0;	// Stop timer
