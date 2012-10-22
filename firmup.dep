@@ -6,8 +6,8 @@
   <configuration>
     <name>Debug</name>
     <outputs>
-      <file>$PROJ_DIR$\Debug\Obj\flash.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\flash.r43</file>
       <file>$PROJ_DIR$\circuit.c</file>
       <file>$PROJ_DIR$\flash.c</file>
       <file>$PROJ_DIR$\circuit.h</file>
@@ -23,38 +23,38 @@
       <file>$PROJ_DIR$\util.c</file>
       <file>$PROJ_DIR$\util.h</file>
       <file>$PROJ_DIR$\Debug\Obj\spi.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\sdfat.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\circuit.r43</file>
+      <file>$PROJ_DIR$\Debug\Obj\sdfat.r43</file>
       <file>$TOOLKIT_DIR$\inc\msp430f5310.h</file>
       <file>$PROJ_DIR$\Debug\Obj\main.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl430xsfn.r43</file>
-      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\config\multiplier32_loc2.xcl</file>
-      <file>$PROJ_DIR$\Debug\Exe\zapp.txt</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\spi.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\stdint.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\main.pbi</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl430xsfn.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\Debug\Exe\zapp.txt</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdint.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\spi.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\util.r43</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
       <file>$PROJ_DIR$\Debug\Exe\firmup.txt</file>
       <file>$PROJ_DIR$\Debug\Exe\zapp.d43</file>
       <file>$PROJ_DIR$\Debug\Obj\zapp.pbd</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\util.r43</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
       <file>$TOOLKIT_DIR$\inc\in430.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\msp430f5310_extra.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\wave.pbi</file>
       <file>$PROJ_DIR$\Debug\Obj\wave.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\firmup.pbd</file>
       <file>$PROJ_DIR$\Debug\Obj\util.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\msp430f5310_extra.r43</file>
       <file>$PROJ_DIR$\Debug\Obj\msp430f5310_extra.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\sdfat.pbi</file>
-      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
-      <file>$PROJ_DIR$\Debug\Obj\flash.pbi</file>
-      <file>$PROJ_DIR$\Debug\Obj\circuit.pbi</file>
       <file>$PROJ_DIR$\wave.h</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\Debug\Obj\sdfat.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\circuit.pbi</file>
+      <file>$PROJ_DIR$\Debug\Obj\flash.pbi</file>
       <file>$PROJ_DIR$\wave.c</file>
       <file>$PROJ_DIR$\Debug\Exe\firmup.d43</file>
     </outputs>
@@ -67,17 +67,17 @@
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 18</file>
+          <file> 17</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 4</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 4</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 4</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 4</file>
         </tool>
       </inputs>
     </file>
@@ -86,21 +86,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 46</file>
+          <file> 48</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 0</file>
+          <file> 1</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 5</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 5</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 5</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 5</file>
         </tool>
       </inputs>
     </file>
@@ -109,7 +109,7 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 23</file>
+          <file> 24</file>
         </tool>
         <tool>
           <name>ICC430</name>
@@ -119,11 +119,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 13 11 9 4 15 5</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 13 11 9 4 15 5</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 13 11 9 4 15 5</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 13 11 9 4 15 5</file>
         </tool>
       </inputs>
     </file>
@@ -136,17 +136,17 @@
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 42</file>
+          <file> 38</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 9</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 9</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 9</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 9</file>
         </tool>
       </inputs>
     </file>
@@ -155,21 +155,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 44</file>
+          <file> 46</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 17</file>
+          <file> 18</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 13 4 11</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 13 4 11</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 13 4 11</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 13 4 11</file>
         </tool>
       </inputs>
     </file>
@@ -178,7 +178,7 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 27</file>
+          <file> 29</file>
         </tool>
         <tool>
           <name>ICC430</name>
@@ -188,11 +188,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 13 4</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 13 4</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 13 4</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 13 4</file>
         </tool>
       </inputs>
     </file>
@@ -201,21 +201,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 40</file>
+          <file> 42</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 34</file>
+          <file> 30</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 28 21 41 1 33 35 26 15</file>
+          <file> 28 21 37 0 31 35 26 15</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 28 21 41 1 29 33 35 26 15</file>
+          <file> 28 21 37 0 25 31 35 26 15</file>
         </tool>
       </inputs>
     </file>
@@ -224,7 +224,7 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 50 30</file>
+          <file> 50 32</file>
         </tool>
       </outputs>
     </file>
@@ -233,7 +233,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 6 24 18 20 42 17 16 38 22</file>
+          <file> 6 23 17 20 38 18 16 40 22</file>
         </tool>
       </inputs>
     </file>
@@ -242,7 +242,7 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 6 24 18 20 42 17 16 38 22</file>
+          <file> 6 23 17 20 38 18 16 40 22</file>
         </tool>
       </inputs>
     </file>
@@ -251,7 +251,7 @@
       <inputs>
         <tool>
           <name>BILINK</name>
-          <file> 47 23 43 44 27 37</file>
+          <file> 47 24 43 46 29 39</file>
         </tool>
       </inputs>
     </file>
@@ -260,7 +260,7 @@
       <inputs>
         <tool>
           <name>BILINK</name>
-          <file> 47 46 23 43 44 27 40</file>
+          <file> 47 48 24 43 46 29 42</file>
         </tool>
       </inputs>
     </file>
@@ -269,21 +269,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 37</file>
+          <file> 39</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 38</file>
+          <file> 40</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 19 36 45 28 21 41 1 33 35 26 48</file>
+          <file> 19 36 45 28 21 37 0 31 35 26 44</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 19 36 45 28 21 41 1 29 33 35 26 48</file>
+          <file> 19 36 45 28 21 37 0 25 31 35 26 44</file>
         </tool>
       </inputs>
     </file>
@@ -292,13 +292,13 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 30</file>
+          <file> 32</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 6 24 18 0 20 42 17 16 34 22</file>
+          <file> 6 23 17 1 20 38 18 16 30 22</file>
         </tool>
       </inputs>
     </file>
@@ -319,23 +319,9 @@
       <file>$TOOLKIT_DIR$\inc\msp430f5310.h</file>
       <file>$TOOLKIT_DIR$\inc\dlib\c\ycheck.h</file>
       <file>$TOOLKIT_DIR$\lib\dlib\dl430xsfn.r43</file>
-      <file>$TOOLKIT_DIR$\config\multiplier32_loc2.xcl</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\stdint.h</file>
-      <file>$TOOLKIT_DIR$\lib\dlib\dl430xsfn.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
-      <file>$TOOLKIT_DIR$\inc\in430.h</file>
-      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
-      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
-      <file>$PROJ_DIR$\wave.h</file>
-      <file>$PROJ_DIR$\wave.c</file>
-      <file>$PROJ_DIR$\Release\Obj\circuit.r43</file>
-      <file>$PROJ_DIR$\Release\Obj\circuit.pbi</file>
-      <file>$PROJ_DIR$\Release\Obj\msp430f5310_extra.pbi</file>
-      <file>$TOOLKIT_DIR$\config\lnkCC430F5133.xcl</file>
       <file>$PROJ_DIR$\Release\Obj\sdfat.r43</file>
       <file>$PROJ_DIR$\Release\Obj\sdfat.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\msp430f5310_extra.r43</file>
       <file>$PROJ_DIR$\Release\Obj\zapp.pbd</file>
       <file>$PROJ_DIR$\Release\Obj\main.pbi</file>
       <file>$PROJ_DIR$\Release\Obj\main.r43</file>
@@ -344,28 +330,42 @@
       <file>$PROJ_DIR$\Release\Exe\zapp.txt</file>
       <file>$PROJ_DIR$\Release\Obj\wave.pbi</file>
       <file>$PROJ_DIR$\Release\Obj\spi.pbi</file>
-      <file>$PROJ_DIR$\Release\Obj\msp430f5310_extra.r43</file>
+      <file>$TOOLKIT_DIR$\config\multiplier32_loc2.xcl</file>
+      <file>$TOOLKIT_DIR$\lib\dlib\dl430xsfn.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Threads.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\stdint.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\DLib_Product.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\in430.h</file>
+      <file>$TOOLKIT_DIR$\inc\dlib\c\yvals.h</file>
+      <file>$PROJ_DIR$\wave.h</file>
+      <file>$TOOLKIT_DIR$\inc\intrinsics.h</file>
+      <file>$PROJ_DIR$\wave.c</file>
+      <file>$PROJ_DIR$\Release\Obj\msp430f5310_extra.pbi</file>
+      <file>$PROJ_DIR$\Release\Obj\circuit.r43</file>
+      <file>$PROJ_DIR$\Release\Obj\circuit.pbi</file>
+      <file>$TOOLKIT_DIR$\config\lnkCC430F5133.xcl</file>
     </outputs>
     <file>
       <name>$PROJ_DIR$\circuit.c</name>
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 25</file>
+          <file> 37</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 24</file>
+          <file> 36</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 2</file>
+          <file> 10 30 33 27 11 31 0 28 29 26 2</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 2</file>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 2</file>
         </tool>
       </inputs>
     </file>
@@ -374,21 +374,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 31</file>
+          <file> 17</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 32</file>
+          <file> 18</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 9 7 5 2 22</file>
+          <file> 10 30 33 27 11 31 0 28 29 26 9 7 5 2 32</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 9 7 5 2 22</file>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 9 7 5 2 32</file>
         </tool>
       </inputs>
     </file>
@@ -397,21 +397,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 26</file>
+          <file> 35</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 38</file>
+          <file> 15</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 5</file>
+          <file> 10 30 33 27 11 31 0 28 29 26 5</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 5</file>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 5</file>
         </tool>
       </inputs>
     </file>
@@ -420,21 +420,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 29</file>
+          <file> 14</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 28</file>
+          <file> 13</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 9 2 7</file>
+          <file> 10 30 33 27 11 31 0 28 29 26 9 2 7</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 9 2 7</file>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 9 2 7</file>
         </tool>
       </inputs>
     </file>
@@ -443,21 +443,21 @@
       <outputs>
         <tool>
           <name>BICOMP</name>
-          <file> 37</file>
+          <file> 23</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 34</file>
+          <file> 20</file>
         </tool>
       </outputs>
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 9</file>
+          <file> 10 30 33 27 11 31 0 28 29 26 9</file>
         </tool>
         <tool>
           <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 9</file>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 9</file>
         </tool>
       </inputs>
     </file>
@@ -466,39 +466,16 @@
       <outputs>
         <tool>
           <name>XLINK</name>
-          <file> 35</file>
+          <file> 21</file>
         </tool>
       </outputs>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\wave.c</name>
-      <outputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 36</file>
-        </tool>
-        <tool>
-          <name>ICC430</name>
-          <file> 33</file>
-        </tool>
-      </outputs>
-      <inputs>
-        <tool>
-          <name>BICOMP</name>
-          <file> 10 19 21 15 11 20 0 17 18 14 22</file>
-        </tool>
-        <tool>
-          <name>ICC430</name>
-          <file> 10 19 21 15 11 20 0 16 17 18 14 22</file>
-        </tool>
-      </inputs>
     </file>
     <file>
       <name>$PROJ_DIR$\Release\Obj\zapp.pbd</name>
       <inputs>
         <tool>
           <name>BILINK</name>
-          <file> 25 31 26 29 37 36</file>
+          <file> 37 17 35 14 23 22</file>
         </tool>
       </inputs>
     </file>
@@ -507,7 +484,30 @@
       <inputs>
         <tool>
           <name>XLINK</name>
-          <file> 27 13 24 32 38 28 34 33 12</file>
+          <file> 38 24 36 18 15 13 20 19 12</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\wave.c</name>
+      <outputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 22</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 19</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 10 30 33 27 11 31 0 28 29 26 32</file>
+        </tool>
+        <tool>
+          <name>ICC430</name>
+          <file> 10 30 33 27 11 31 0 25 28 29 26 32</file>
         </tool>
       </inputs>
     </file>

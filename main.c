@@ -23,6 +23,8 @@ uint16_t prog_start = 0x9000;	// Starting address of next program
 #define FIRMUP_ADDR_BEGIN	0x8000
 #define FIRMUP_ADDR_END		0x8FFF
 
+#define RST_VECT	0xFFFE		// Address of reset vector
+
 #define BUFF_SIZE		512		// Size of data buffer
 
 #define CLOCK_SPEED		12		// DCO speed (MHz)
@@ -40,7 +42,8 @@ uint16_t prog_start = 0x9000;	// Starting address of next program
 uint32_t firm_file_offset(uint8_t *, struct fatstruct *);
 uint8_t valid_addr(uint16_t);
 void LED1_PANIC(void);
-void LED1_LOW_VOLTAGE(void);
+//void LED1_LOW_VOLTAGE(void);
+void error_state(void);
 
 /*----------------------------------------------------------------------------*/
 /* Global variables															  */
@@ -52,7 +55,7 @@ uint8_t data_sd_buff[BUFF_SIZE];	// Data buffer for R/W to SD card
 /* Main routine																  */
 /*----------------------------------------------------------------------------*/
 void main(void) {
-	uint8_t version[] = "FIRMUP VERSION 20120907";	// Firmware version
+	uint8_t version[] = "FIRMUP VERSION 20121018";	// Firmware version
 
 	uint8_t *data_sd;		// Pointer to SD card data buffer
 
@@ -94,6 +97,7 @@ void main(void) {
 	if ((fdataoffset = firm_file_offset(data_sd, &fatinfo)) == -1) {
 		first_word = *((uint16_t *)prog_start);
 		if (first_word == 0xFFFF) {		// Main program not in flash
+			error_state();
 			brownout_reset();			// Trigger brownout reset
 		} else {
 			asm("BR prog_start");		// Go to main program
@@ -126,6 +130,8 @@ void main(void) {
 			if (ctrl_high())
 				break;
 	}
+
+	TA0CTL = MC_0;	// Stop timer
 
 /*******************************************************************************
 *	Interpret user input
@@ -161,6 +167,7 @@ void main(void) {
 	if (user_input == CTRL_TAP) {		// User declined
 		first_word = *((uint16_t *)prog_start);
 		if (first_word == 0xFFFF) {		// Main program not in flash
+			error_state();
 			brownout_reset();			// Trigger brownout reset
 		} else {
 			asm("BR prog_start");		// Go to main program
@@ -173,8 +180,8 @@ void main(void) {
 	wdt_stop();		// Stop watchdog timer
 	FCTL3 = FWPW;	// Clear LOCK
 
-// Get current value of reset vector (word at address 0xFFFE)
-	reset_vector = *((uint16_t *)0xFFFE);
+// Get current value of reset vector
+	reset_vector = *((uint16_t *)RST_VECT);
 
 	data_or_addr = 0;	// 0: parse data, 1: parse address
 	wval = 0;			// Parsed word value
@@ -195,7 +202,7 @@ void main(void) {
 
 			case 0x00:		// Null byte should not be in file
 				eof = 1;
-				LED1_PANIC();	// Flash LED to show "panic"
+				error_state();
 // Trigger brownout reset upon failure
 				brownout_reset();
 
@@ -257,7 +264,7 @@ void main(void) {
 // Rewrite reset vector (always reset to firmware updater)
 	while (BUSY & FCTL3);	// Test BUSY until ready
 	FCTL1 = FWPW | WRT;		// Enable write
-	*((uint16_t *)0xFFFE) = reset_vector;
+	*((uint16_t *)RST_VECT) = reset_vector;
 
 	FCTL1 = FWPW;			// Clear WRT and ERASE
 	FCTL3 = FWPW | LOCK;	// Set LOCK
@@ -271,6 +278,7 @@ void main(void) {
 
 	first_word = *((uint16_t *)prog_start);
 	if (first_word == 0xFFFF) {		// Main program not in flash
+		error_state();
 		brownout_reset();			// Trigger brownout reset
 	} else {
 		asm("BR prog_start");		// Go to main program
@@ -296,6 +304,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 
 	avail = init_sd();		// Get availability of SD Card
 	if (avail != 0) {		// If any slaves are not available
+		wdt_stop();			// Stop watchdog timer
 		return -1;
 	}
 
@@ -303,6 +312,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 
 // Find and read the FAT16 boot sector
 	if (read_boot_sector(data_sd, fatinfo)) {
+		wdt_stop();		// Stop watchdog timer
 		return -1;
 	}
 
@@ -310,6 +320,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 
 // Parse the FAT16 boot sector
 	if (parse_boot_sector(data_sd, fatinfo)) {
+		wdt_stop();		// Stop watchdog timer
 		return -1;
 	}
 
@@ -331,6 +342,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 		data_sd[9] == 'X' &&
 		data_sd[10] == 'T'))
 	{
+		wdt_stop();		// Stop watchdog timer
 		return -1;
 	}
 
@@ -356,7 +368,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 uint8_t valid_addr(uint16_t a) {
 	if (a >= FIRMUP_ADDR_BEGIN && a <= FIRMUP_ADDR_END)
 		return 0;
-	else if (a == 0xFFFE)
+	else if (a == RST_VECT)
 		return 0;
 	else
 		return 1;
@@ -375,4 +387,28 @@ void LED1_PANIC(void) {
 			for (i = 0; i < 8000; i++);
 		}
 	}
+}
+
+/*----------------------------------------------------------------------------*/
+/* Enter error state														  */
+/* Flash LED "panic" intermittently while waiting for CTRL button to be		  */
+/* pressed.																	  */
+/*----------------------------------------------------------------------------*/
+void error_state(void) {
+	uint16_t debounce;		// Used for debouncing
+
+// ACLK source (32768 Hz), f/1, count continuous up, Timer_A clear
+	TA0CTL = TASSEL_1 | ID_0 | MC_2 | TACLR;
+
+	while (!ctrl_high()) {
+		LED1_PANIC();
+		TA0R = 0;
+		while (!ctrl_high() && TA0R < 0xFFFF);
+	}
+
+	TA0CTL = MC_0;	// Stop timer
+
+	debounce = 0x1000;
+	while (debounce--);		// Wait for debouncing
+	while (ctrl_high());	// Wait for button release
 }
