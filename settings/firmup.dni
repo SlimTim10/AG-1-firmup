@@ -5,10 +5,10 @@ Control Register=0
 NextState0=0
 NextState1=0
 [Action Register]
-Break=0
+Break=3
 State Storage=0
 [DebugChecksum]
-Checksum=-1152855261
+Checksum=537900410
 [DisAssemblyWindow]
 NumStates=_ 1
 State 1=_ 1
@@ -27,7 +27,8 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [Breakpoints]
-Count=0
+Bp0=_ "STD_CODE" "{$PROJ_DIR$\main.c}.404.13@1" 1 0 0 0 "" 0 ""
+Count=1
 [FET]
 Clock mode=14
 Extended Clock mode=-1

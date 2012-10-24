@@ -42,7 +42,7 @@ uint16_t prog_start = 0x9000;	// Starting address of next program
 uint32_t firm_file_offset(uint8_t *, struct fatstruct *);
 uint8_t valid_addr(uint16_t);
 void LED1_PANIC(void);
-//void LED1_LOW_VOLTAGE(void);
+void LED1_LOW_VOLTAGE(void);
 void error_state(void);
 
 /*----------------------------------------------------------------------------*/
@@ -386,17 +386,47 @@ void LED1_PANIC(void) {
 }
 
 /*----------------------------------------------------------------------------*/
+/* Flash LED dimly multiple times to signal low voltage						  */
+/*----------------------------------------------------------------------------*/
+void LED1_LOW_VOLTAGE(void) {
+	uint8_t i;
+	uint32_t j;
+	for (i = 0; i < 20; i++) {
+		if (i % 2 == 0) {
+			LED1_ON();
+			for (j = 0; j < 0x800; j++) _NOP();
+		} else {
+			LED1_OFF();
+			for (j = 0; j < 0x20000; j++) _NOP();
+		}
+	}
+	LED1_OFF();
+}
+
+/*----------------------------------------------------------------------------*/
 /* Enter error state														  */
 /* Flash LED "panic" intermittently while waiting for CTRL button to be		  */
 /* pressed.																	  */
 /*----------------------------------------------------------------------------*/
 void error_state(void) {
 	uint16_t debounce;		// Used for debouncing
+	uint16_t voltage;
 
 // ACLK source (32768 Hz), f/1, count continuous up, Timer_A clear
 	TA0CTL = TASSEL_1 | ID_0 | MC_2 | TACLR;
 
-	while (!ctrl_high()) {
+	while (!ctrl_high()) {		// Wait for button press
+// Check for low voltage
+		power_on(SD_PWR);		// Turn on power to SD Card
+		voltage = adc_read();
+		if (voltage < VOLTAGE_THRSHLD) {
+// On low voltage detection, enter low power mode
+// Device must be reset with power cycle to turn on
+			LED1_LOW_VOLTAGE();
+			PMMCTL0_H = PMMPW_H;		// Open PMM (Power Management Module)
+			PMMCTL0_L |= PMMREGOFF;		// Set flag to enter LPM4.5
+			LPM4;						// Enter Low Power Mode 4
+		}
 		LED1_PANIC();
 		TA0R = 0;
 		while (!ctrl_high() && TA0R < ACLK_2SEC);

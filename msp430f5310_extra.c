@@ -34,14 +34,11 @@ void adc_config(void) {
 // Reference On
 	REFCTL0 = REFMSTR | REFVSEL_3 | REFTCOFF | REFON;
 	ADC10CTL0 &= ~ADC10ENC;						// Disable ADC
-	ADC10CTL0 = ADC10SHT_1 | ADC10ON;			// 8 clock cycles, ADC on
-// VR+ = VREF+ and VR- = AVSS, input channel A3
-	ADC10MCTL0 = ADC10SREF_1 | ADC10INCH_3;
-// SAMPCON sourced from sampling timer, CLK/8, SMCLK source,
-// Repeat-single-channel
-// (ADC10CLK = SMCLK / 8 = 12 MHz / 8 = 1.5 MHz)
-	ADC10CTL1 = ADC10SHP | ADC10DIV_7 | ADC10SSEL_3 | ADC10CONSEQ_2;
-	ADC10CTL2 &= ~ADC10RES;						// 8-bit resolution
+	ADC10CTL0 = ADC10SHT_15 | ADC10ON;			// 1024 clock cycles, ADC on
+	ADC10MCTL0 = ADC10SREF_1 | ADC10INCH_3;		// VR+ = VREF+ and VR- = AVSS
+// CLK/1, MODCLK source, single-channel
+	ADC10CTL1 = ADC10SHP | ADC10DIV_0 | ADC10SSEL_0 | ADC10CONSEQ_0;
+	ADC10CTL2 = ADC10RES;						// 10 bit resolution
 	ADC10IFG = 0x0000;							// Clear interrupt flags
 	ADC10CTL0 |= ADC10ENC | ADC10SC;			// Enable and read once
 	while (!(ADC10IFG & ADC10IFG0));			// Wait for ready flag
@@ -49,13 +46,14 @@ void adc_config(void) {
 
 /*----------------------------------------------------------------------------*/
 /* Read and return voltage with ADC (10 bit)								  */
-/* Actual voltage = (ADC10MEM0 / 1024) * 2.5								  */
 /*----------------------------------------------------------------------------*/
 uint16_t adc_read(void) {
+// Actual voltage = (ADC10MEM0 / 1024) * 2.5 * 2
+// Half voltage due to resistor divider
 	ADC10IFG = 0x0000;							// Clear interrupt flags
-	while (ADC10CTL1 & ADC10BUSY);				// Wait until ADC is not busy
-	ADC10CTL0 |= ADC10SC;						// Trigger conversion
-	//while (!(ADC10IFG & ADC10IFG0));			// Wait for ready flag
+	ADC10CTL0 &= ~ADC10ENC;						// Disable ADC
+	ADC10CTL0 |= ADC10ENC | ADC10SC;			// Enable and read once
+	while (!(ADC10IFG & ADC10IFG0));			// Wait for ready flag
 	return ADC10MEM0;
 }
 
