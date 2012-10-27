@@ -284,14 +284,15 @@ void main(void) {
 /*----------------------------------------------------------------------------*/
 /* Look for firmware file on SD card 										  */
 /* Return offset of file data on success.									  */
-/* Return -1 on error.														  */
-/* Firmware file must be first file in directory table and has a name in the  */
-/* format FIRMW***.TXT (where * is one wild character).						  */
+/* Return -1 on file not found or error.									  */
+/* Firmware file must be one of the first 16 files in the directory table and */
+/*  have a name in the format FIRMW***.TXT (where * is one wild character).	  */
 /*----------------------------------------------------------------------------*/
 uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 	uint8_t avail;			// Availability of slave devices
 	uint16_t clust;			// Starting cluster
 	uint32_t filesize;		// Size of firmware file
+	uint16_t i;
 
 	wdt_config();			// Start watchdog timer
 
@@ -327,33 +328,39 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 
 	FEED_WATCHDOG;
 
+// Look through the first 16 directory table entries
+// (first block of directory table)
+	for (i = 0; i < 512; i += 32) {
 // Check if first file name matches FIRMW***.TXT (where * is one wild character)
 // If no firmware file is found, run main program
-	if (!(data_sd[0] == 'F' &&
-		data_sd[1] == 'I' &&
-		data_sd[2] == 'R' &&
-		data_sd[3] == 'M' &&
-		data_sd[4] == 'W' &&
-		data_sd[8] == 'T' &&
-		data_sd[9] == 'X' &&
-		data_sd[10] == 'T'))
-	{
-		wdt_stop();		// Stop watchdog timer
-		return -1;
-	}
+		if (data_sd[i+0] == 'F' &&
+			data_sd[i+1] == 'I' &&
+			data_sd[i+2] == 'R' &&
+			data_sd[i+3] == 'M' &&
+			data_sd[i+4] == 'W' &&
+			data_sd[i+8] == 'T' &&
+			data_sd[i+9] == 'X' &&
+			data_sd[i+10] == 'T')
+		{
+			wdt_stop();		// Stop watchdog timer
 
 // Starting cluster number of firmware file data
-	clust = (data_sd[27] << 8) | data_sd[26];
+			clust = (data_sd[i+27] << 8) | data_sd[i+26];
 
 // Firmware file size
-	filesize =	(((uint32_t)data_sd[31]) << 24) |
-				(((uint32_t)data_sd[30]) << 16) |
-				(data_sd[29] << 8) |
-				data_sd[28];
+			filesize =	(((uint32_t)data_sd[i+31]) << 24) |
+						(((uint32_t)data_sd[i+30]) << 16) |
+						(data_sd[i+29] << 8) |
+						data_sd[i+28];
+
+			return get_cluster_offset(clust, fatinfo);
+		}
+
+		FEED_WATCHDOG;
+	}
 
 	wdt_stop();		// Stop watchdog timer
-
-	return get_cluster_offset(clust, fatinfo);
+	return -1;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -409,9 +416,11 @@ void LED1_LOW_VOLTAGE(void) {
 /* pressed.																	  */
 /*----------------------------------------------------------------------------*/
 void error_state(void) {
-	uint16_t debounce;		// Used for debouncing
+	uint16_t debounce;			// Used for debouncing
 	uint16_t voltage;
+	uint8_t low_volt_strike;	// Count 2 strikes before turning off
 
+	low_volt_strike = 0;
 // ACLK source (32768 Hz), f/1, count continuous up, Timer_A clear
 	TA0CTL = TASSEL_1 | ID_0 | MC_2 | TACLR;
 
@@ -420,12 +429,15 @@ void error_state(void) {
 		power_on(SD_PWR);		// Turn on power to SD Card
 		voltage = adc_read();
 		if (voltage < VOLTAGE_THRSHLD) {
+			low_volt_strike++;
+			if (low_volt_strike == 2) {
 // On low voltage detection, enter low power mode
 // Device must be reset with power cycle to turn on
-			LED1_LOW_VOLTAGE();
-			PMMCTL0_H = PMMPW_H;		// Open PMM (Power Management Module)
-			PMMCTL0_L |= PMMREGOFF;		// Set flag to enter LPM4.5
-			LPM4;						// Enter Low Power Mode 4
+				LED1_LOW_VOLTAGE();
+				PMMCTL0_H = PMMPW_H;		// Open PMM (Power Management Module)
+				PMMCTL0_L |= PMMREGOFF;		// Set flag to enter LPM4.5
+				LPM4;						// Enter Low Power Mode 4
+			}
 		}
 		LED1_PANIC();
 		TA0R = 0;
