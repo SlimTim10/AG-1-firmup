@@ -55,7 +55,7 @@ uint8_t data_sd_buff[BUFF_SIZE];	// Data buffer for R/W to SD card
 /* Main routine																  */
 /*----------------------------------------------------------------------------*/
 void main(void) {
-	uint8_t version[] = "FIRMUP VERSION 20121028";	// Firmware version
+	uint8_t version[] = "FIRMUP VERSION 20121029";	// Firmware version
 
 	uint8_t *data_sd;		// Pointer to SD card data buffer
 
@@ -427,9 +427,7 @@ void LED1_LOW_VOLTAGE(void) {
 void error_state(void) {
 	uint16_t debounce;			// Used for debouncing
 	uint16_t voltage;
-	uint8_t low_volt_strike;	// Count 2 strikes before turning off
 
-	low_volt_strike = 0;
 // ACLK source (32768 Hz), f/1, count continuous up, Timer_A clear
 	TA0CTL = TASSEL_1 | ID_0 | MC_2 | TACLR;
 
@@ -438,15 +436,12 @@ void error_state(void) {
 		power_on(SD_PWR);		// Turn on power to SD Card
 		voltage = adc_read();
 		if (voltage < VOLTAGE_THRSHLD) {
-			low_volt_strike++;
-			if (low_volt_strike == 2) {
 // On low voltage detection, enter low power mode
 // Device must be reset with power cycle to turn on
-				LED1_LOW_VOLTAGE();
-				PMMCTL0_H = PMMPW_H;		// Open PMM (Power Management Module)
-				PMMCTL0_L |= PMMREGOFF;		// Set flag to enter LPM4.5
-				LPM4;						// Enter Low Power Mode 4
-			}
+			LED1_LOW_VOLTAGE();
+			PMMCTL0_H = PMMPW_H;		// Open PMM (Power Management Module)
+			PMMCTL0_L |= PMMREGOFF;		// Set flag to enter LPM4.5
+			LPM4;						// Enter Low Power Mode 4
 		}
 		LED1_PANIC();
 		TA0R = 0;
