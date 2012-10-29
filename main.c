@@ -55,7 +55,7 @@ uint8_t data_sd_buff[BUFF_SIZE];	// Data buffer for R/W to SD card
 /* Main routine																  */
 /*----------------------------------------------------------------------------*/
 void main(void) {
-	uint8_t version[] = "FIRMUP VERSION 20121018";	// Firmware version
+	uint8_t version[] = "FIRMUP VERSION 20121028";	// Firmware version
 
 	uint8_t *data_sd;		// Pointer to SD card data buffer
 
@@ -88,6 +88,15 @@ void main(void) {
 	adc_config();			// Set up ADC
 
 	LED1_ON();
+
+// Pause for 1 second (necessary to pass SD card initialization)
+	TA0CCR0 = ACLK_1SEC;	// Count up to 1 second
+// ACLK source (32768 Hz), f/1, count up to CCR0, Timer_A clear
+	TA0CTL = TASSEL_1 | ID_0 | MC_1 | TACLR;
+	TA0CTL &= ~TAIFG;		// Clear interrupt flag
+	while (!(TA0CTL & TAIFG));
+	TA0CTL = MC_0;			// Stop timer
+
 	while (ctrl_high());	// Wait for button release (from bender program)
 
 /*******************************************************************************
