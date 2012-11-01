@@ -55,7 +55,7 @@ uint8_t data_sd_buff[BUFF_SIZE];	// Data buffer for R/W to SD card
 /* Main routine																  */
 /*----------------------------------------------------------------------------*/
 void main(void) {
-	uint8_t version[] = "FIRMUP VERSION 20121029";	// Firmware version
+	uint8_t version[] = "FIRMUP VERSION 20121101";	// Firmware version
 
 	uint8_t *data_sd;		// Pointer to SD card data buffer
 
