@@ -188,6 +188,7 @@ void main(void) {
 // Get current value of reset vector
 	reset_vector = *((uint16_t *)RST_VECT);
 
+	flashptr = 0;
 	data_or_addr = 0;	// 0: parse data, 1: parse address
 	wval = 0;			// Parsed word value
 	addr = 0;			// Parsed address value
@@ -196,7 +197,10 @@ void main(void) {
 	eof = 0;			// End of file flag
 
 	while (!eof) {
-		read_block(data_sd, fdataoffset);
+// Read next block or break on failure
+		if (read_block(data_sd, fdataoffset))
+			break;
+
 		LED1_TOGGLE();		// Flash to show progress
 
 		for (i = 0; i < 512 && !eof; i++) {
@@ -215,7 +219,7 @@ void main(void) {
 				eof = 1;
 			case '@':		// @ADDR is the starting address of a section
 // Write trailing bytes to flash before parsing next address
-				if (datacount > 0) {
+				if (datacount > 0 && valid_addr((uint16_t)flashptr)) {
 					fwrite_word(flashptr, wval);	// Write word value to flash
 					*flashptr++;					// Increment flash address
 					wval = 0;
@@ -236,7 +240,8 @@ void main(void) {
 					data_or_addr = 0;
 				}
 			case ' ':		// Space separates data bytes
-				if (datacount == 4) {				// Word value
+// 4 bytes ASCII = 1 word parsed value
+				if (datacount == 4 && valid_addr((uint16_t)flashptr)) {
 					if ((uint16_t)flashptr >= nextseg) {
 						erase_segment(flashptr);
 						nextseg =	(uint32_t)flashptr -
@@ -274,7 +279,7 @@ void main(void) {
 	FCTL1 = FWPW;			// Clear WRT and ERASE
 	FCTL3 = FWPW | LOCK;	// Set LOCK
 
-// Delete firmware file
+// Delete firmware file (clear first block of both directory table and FAT)
 	write_block(data_sd, fatinfo.dtoffset, 0);	// Clear directory table
 	read_block(data_sd, fatinfo.fatoffset);		// Read FAT 
 	write_block(data_sd, fatinfo.fatoffset, 4);	// Write FAT as empty
@@ -340,8 +345,9 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 // Look through the first 16 directory table entries
 // (first block of directory table)
 	for (i = 0; i < 512; i += 32) {
-// Check if first file name matches FIRMW***.TXT (where * is one wild character)
-// If no firmware file is found, run main program
+		if (data_sd[i+0] == 0)	// End of files
+			break;
+// Check if file name matches FIRMW***.TXT (where * is one wild character)
 		if (data_sd[i+0] == 'F' &&
 			data_sd[i+1] == 'I' &&
 			data_sd[i+2] == 'R' &&
@@ -351,7 +357,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 			data_sd[i+9] == 'X' &&
 			data_sd[i+10] == 'T')
 		{
-			wdt_stop();		// Stop watchdog timer
+			wdt_stop();			// Stop watchdog timer
 
 // Starting cluster number of firmware file data
 			clust = (data_sd[i+27] << 8) | data_sd[i+26];
