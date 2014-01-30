@@ -31,6 +31,7 @@
 #define CT_SD2				0x04			// SD ver 2
 #define CT_SDC				(CT_SD1|CT_SD2)	// SD
 #define CT_BLOCK			0x08			// Block addressing
+#define CT_SDHC				(CT_SD2 | CT_BLOCK)	// SDHC
 
 #define CS_LOW_SD()  P4OUT &= ~(0x80)		// Card Select (P4.7)
 #define CS_HIGH_SD() P4OUT |= 0x80			// Card Deselect (P4.7)
@@ -51,15 +52,17 @@ struct fatstruct {					// FAT information based on boot sector
 	uint32_t nhidsects;				// Number of hidden sectors
 // Offset of the boot record sector, determined by number of hidden sectors
 	uint32_t bootoffset;
+// Divisor for the offset when reading/writing; based on SD card type
+	uint16_t offset_div;
 };
 
-uint8_t init_sd(void);
+uint8_t init_sd(struct fatstruct *info);
 void go_idle_sd(void);
 uint8_t send_cmd_sd(uint8_t cmd, uint32_t arg);
 uint8_t send_acmd_sd(uint8_t acmd, uint32_t arg);
 //uint8_t write_multiple_block(uint32_t start_offset);
-uint8_t write_block(uint8_t *data, uint32_t offset, uint16_t count);
-uint8_t read_block(uint8_t *data, uint32_t offset);
+uint8_t write_block(uint8_t *data, const struct fatstruct *info, uint32_t offset, uint16_t count);
+uint8_t read_block(uint8_t *data, const struct fatstruct *info, uint32_t offset);
 uint16_t find_cluster(uint8_t *data, struct fatstruct *);
 uint32_t get_cluster_offset(uint16_t clust, struct fatstruct *);
 uint8_t valid_block(uint8_t block, struct fatstruct *);

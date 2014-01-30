@@ -198,7 +198,7 @@ void main(void) {
 
 	while (!eof) {
 // Read next block or break on failure
-		if (read_block(data_sd, fdataoffset))
+		if (read_block(data_sd, &fatinfo, fdataoffset))
 			break;
 
 		LED1_TOGGLE();		// Flash to show progress
@@ -280,9 +280,9 @@ void main(void) {
 	FCTL3 = FWPW | LOCK;	// Set LOCK
 
 // Delete firmware file (clear first block of both directory table and FAT)
-	write_block(data_sd, fatinfo.dtoffset, 0);	// Clear directory table
-	read_block(data_sd, fatinfo.fatoffset);		// Read FAT 
-	write_block(data_sd, fatinfo.fatoffset, 4);	// Write FAT as empty
+	write_block(data_sd, &fatinfo, fatinfo.dtoffset, 0);	// Clear directory table
+	read_block(data_sd, &fatinfo, fatinfo.fatoffset);		// Read FAT 
+	write_block(data_sd, &fatinfo, fatinfo.fatoffset, 4);	// Write FAT as empty
 
 	LED1_OFF();
 
@@ -313,7 +313,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 	spi_config();			// Set up SPI for MCU
 	power_on(SD_PWR);		// Turn on power to SD Card
 
-	avail = init_sd();		// Get availability of SD Card
+	avail = init_sd(fatinfo);		// Get availability of SD Card
 	if (avail != 0) {		// If any slaves are not available
 		wdt_stop();			// Stop watchdog timer
 		return -1;
@@ -338,7 +338,7 @@ uint32_t firm_file_offset(uint8_t *data_sd, struct fatstruct *fatinfo) {
 	FEED_WATCHDOG;
 
 // Read first entry in directory table
-	read_block(data_sd, fatinfo->dtoffset);
+	read_block(data_sd, fatinfo, fatinfo->dtoffset);
 
 	FEED_WATCHDOG;
 

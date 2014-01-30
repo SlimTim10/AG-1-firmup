@@ -48,7 +48,7 @@
 /*----------------------------------------------------------------------------*/
 /* Initialize SD Card														  */
 /*----------------------------------------------------------------------------*/
-uint8_t init_sd(void) {
+uint8_t init_sd(struct fatstruct *info) {
 	uint8_t short_timeout = 10;
 	uint16_t tmr, long_timeout = 0x1000;
 	uint8_t ocr[4];
@@ -104,11 +104,13 @@ uint8_t init_sd(void) {
 	CS_HIGH_SD();				// Card deselect
 
 	if (card_type == CT_SD2) {	// SD 2.0
+		info->offset_div = 1;
 		return 0;
 	}
 
 // SDHC
-	if (card_type == (CT_SD2 | CT_BLOCK)) {
+	if (card_type == CT_SDHC) {
+		info->offset_div = 512;
 		return 0;
 	}
 
@@ -235,10 +237,11 @@ uint8_t wait_startblock(void) {
 /*----------------------------------------------------------------------------*/
 /* Write the first count bytes in the given data buffer starting at offset	  */
 /*----------------------------------------------------------------------------*/
-uint8_t write_block(uint8_t *data, uint32_t offset, uint16_t count) {
+uint8_t write_block(uint8_t *data, const struct fatstruct *info, uint32_t offset, uint16_t count) {
 	CS_LOW_SD();
 	
 // WRITE_BLOCK command
+	offset /= info->offset_div;
 	if (send_cmd_sd(CMD24, offset)) {
 		CS_HIGH_SD();			// Card deselect
 		return 1;
@@ -280,10 +283,11 @@ uint8_t write_block(uint8_t *data, uint32_t offset, uint16_t count) {
 /*----------------------------------------------------------------------------*/
 /* Read 512 bytes from offset and store them in the given data buffer		  */
 /*----------------------------------------------------------------------------*/
-uint8_t read_block(uint8_t *data, uint32_t offset) {
+uint8_t read_block(uint8_t *data, const struct fatstruct *info, uint32_t offset) {
 	CS_LOW_SD();				// Card select
 	
 // READ_SINGLE_BLOCK command with offset as argument
+	offset /= info->offset_div;
 	if (send_cmd_sd(CMD17, offset)) {
 		CS_HIGH_SD();			// Card deselect
 		return 1;
@@ -320,7 +324,7 @@ uint16_t find_cluster(uint8_t *data, struct fatstruct *info) {
 /* Read each new block of the FAT */
 		if (j == 0) {
 			block_offset = info->fatoffset + i;
-			if (read_block(data, block_offset)) return 0;
+			if (read_block(data, info, block_offset)) return 0;
 		}
 		
 		if (data[j] == 0x00 && data[j+1] == 0x00) {
@@ -331,11 +335,11 @@ uint16_t find_cluster(uint8_t *data, struct fatstruct *info) {
 			data[j+1] = 0xFF;
 
 // Write to FAT 
-			if (write_block(data, block_offset, 512)) return 0;
+			if (write_block(data, info, block_offset, 512)) return 0;
 
 // Write to second FAT 
 			if (info->nfats > 1) {
-				if (write_block(data, block_offset + info->fatsize, 512)) return 0;
+				if (write_block(data, info, block_offset + info->fatsize, 512)) return 0;
 			}
 
 // Return free cluster index
@@ -370,7 +374,7 @@ uint8_t update_fat(	uint8_t *data, struct fatstruct *info,
 	uint32_t block_offset = info->fatoffset + index - (index % 512);
 	
 // Read the right block of the FAT 
-	if (read_block(data, block_offset)) return 1;
+	if (read_block(data, info, block_offset)) return 1;
 
 	index = index % 512;		// Change index from absolute to relative
 
@@ -379,11 +383,11 @@ uint8_t update_fat(	uint8_t *data, struct fatstruct *info,
 	data[index+1] = (uint8_t)(num >> 8);
 
 // Write to FAT 
-	if (write_block(data, block_offset, 512)) return 1;
+	if (write_block(data, info, block_offset, 512)) return 1;
 
 // Write to second FAT 
 	if (info->nfats > 1) {
-		if (write_block(data, block_offset + info->fatsize, 512)) return 1;
+		if (write_block(data, info, block_offset + info->fatsize, 512)) return 1;
 	}
 
 	return 0;
@@ -408,7 +412,7 @@ uint8_t update_dir_table(	uint8_t *data,
 	for (i = 0, j = 0; i < info->dtsize; i += 32) {
 		if (i % info->nbytesinsect == 0) {
 // Next sector
-			if (read_block(data, info->dtoffset + i)) return 1;
+			if (read_block(data, info, info->dtoffset + i)) return 1;
 			if (i > 0) j++;
 		}
 		
@@ -449,7 +453,7 @@ uint8_t update_dir_table(	uint8_t *data,
 	
 /* We can only write blocks of nbytesinsect bytes, so make sure the offset
 we're writing to is at the beginning of a sector */
-	write_block(data,
+	write_block(data, info,
 		dir_entry_offset - (dir_entry_offset % info->nbytesinsect), 512);
 	
 	return 0;
@@ -464,7 +468,7 @@ uint8_t read_boot_sector(uint8_t *data, struct fatstruct *boot) {
 	boot->nhidsects = 0;
 	boot->bootoffset = 0;
 // Read first sector
-	if (read_block(data, 0)) return 1;
+	if (read_block(data, boot, 0)) return 1;
 	
 // Check if the first sector is the boot sector
 	if (data[0x00] == 0x00) {
@@ -477,7 +481,7 @@ uint8_t read_boot_sector(uint8_t *data, struct fatstruct *boot) {
 // Location of boot sector
 		boot->bootoffset = boot->nhidsects * 512;
 // Read boot sector and store in data buffer
-		if (read_block(data, boot->bootoffset)) return 1;
+		if (read_block(data, boot, boot->bootoffset)) return 1;
 	}
 	
 // Verify validity of boot sector
@@ -557,7 +561,7 @@ uint16_t get_file_num(uint8_t *data, struct fatstruct *info) {
 // Check for end of sector
 		if (i % info->nbytesinsect == 0) {
 // Read next sector
-			if (read_block(data, info->dtoffset + i)) return 1;
+			if (read_block(data, info, info->dtoffset + i)) return 1;
 			j = 0;
 		}
 		if (data[j] != 0xE5) {	// 0xE5 marks a deleted file
